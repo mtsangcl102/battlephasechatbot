@@ -1,149 +1,202 @@
-/**
- * Copyright 2017-present, Facebook, Inc. All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- */
-'use strict';
+  /**
+   * Copyright 2021-present, Facebook, Inc. All rights reserved.
+   *
+   * This source code is licensed under the license found in the
+   * LICENSE file in the root directory of this source tree.
+   *
+   * Messenger Platform Quick Start Tutorial
+   *
+   * This is the completed code for the Messenger Platform quick start tutorial
+   *
+   * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start/
+   *
+   * To run this code, you must do the following:
+   *
+   * 1. Deploy this code to a server running Node.js
+   * 2. Run `yarn install`
+   * 3. Add your VERIFY_TOKEN and PAGE_ACCESS_TOKEN to your environment vars
+   */
 
-// import dependencies
-const bodyParser = require('body-parser'),
+  'use strict';
+
+  // Use dotenv to read .env vars into Node
+  require('dotenv').config();
+
+  // Imports dependencies and set up http server
+  const
+      request = require('request'),
       express = require('express'),
-      app = express().use(bodyParser.json())
-;
+      { urlencoded, json } = require('body-parser'),
+      app = express();
 
-// webhook setup
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+  // Parse application/x-www-form-urlencoded
+  app.use(urlencoded({ extended: true }));
 
-// webhook verification
-app.get('/webhook', (req, res) => {
+  // Parse application/json
+  app.use(json());
 
-  // Your verify token. Should be a random string.
-  // From application of facebook developer
-  let VERIFY_TOKEN = "EAADhPGPjrSYBAChaHvZC15mYRJP2v2jWSXFuhX6kJPGTwMxgU1MobSkDqrBIVS5N8oeZCkckaXmZBukGVKmD7y4A75ZBvNdheBmKBI2FVI0Pwj20E7cnlSXzOjaDIVabLd0T3p5TtMOwsUtRAOZCZAx7yAj9YVAlzUExFaUKAd5QZDZD"
+  // Respond with 'Hello World' when a GET request is made to the homepage
+  app.get('/', function (_req, res) {
+    res.send('Hello World');
+  });
 
-  // Parse the query params
-  let mode = req.query['hub.mode'];
-  let token = req.query['hub.verify_token'];
-  let challenge = req.query['hub.challenge'];
+  // Adds support for GET requests to our webhook
+  app.get('/webhook', (req, res) => {
 
-  // Checks if a token and mode is in the query string of the request
-  if (mode && token) {
+    // Your verify token. Should be a random string.
+    const VERIFY_TOKEN = "EAADhPGPjrSYBAChaHvZC15mYRJP2v2jWSXFuhX6kJPGTwMxgU1MobSkDqrBIVS5N8oeZCkckaXmZBukGVKmD7y4A75ZBvNdheBmKBI2FVI0Pwj20E7cnlSXzOjaDIVabLd0T3p5TtMOwsUtRAOZCZAx7yAj9YVAlzUExFaUKAd5QZDZD";
 
-    // Checks the mode and token sent is correct
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+    // Parse the query params
+    let mode = req.query['hub.mode'];
+    let token = req.query['hub.verify_token'];
+    let challenge = req.query['hub.challenge'];
 
-      // Responds with the challenge token from the request
-      console.log('WEBHOOK_VERIFIED');
-      res.status(200).send(challenge);
+    // Checks if a token and mode is in the query string of the request
+    if (mode && token) {
 
-    } else {
-      // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);
+      // Checks the mode and token sent is correct
+      if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+
+        // Responds with the challenge token from the request
+        console.log('WEBHOOK_VERIFIED');
+        res.status(200).send(challenge);
+
+      } else {
+        // Responds with '403 Forbidden' if verify tokens do not match
+        res.sendStatus(403);
+      }
     }
+  });
+
+  // Creates the endpoint for your webhook
+  app.post('/webhook', (req, res) => {
+    let body = req.body;
+
+    // Checks if this is an event from a page subscription
+    if (body.object === 'page') {
+
+      // Iterates over each entry - there may be multiple if batched
+      body.entry.forEach(function(entry) {
+
+        // Gets the body of the webhook event
+        let webhookEvent = entry.messaging[0];
+        console.log(webhookEvent);
+
+        // Get the sender PSID
+        let senderPsid = webhookEvent.sender.id;
+        console.log('Sender PSID: ' + senderPsid);
+
+        // Check if the event is a message or postback and
+        // pass the event to the appropriate handler function
+        if (webhookEvent.message) {
+          handleMessage(senderPsid, webhookEvent.message);
+        } else if (webhookEvent.postback) {
+          handlePostback(senderPsid, webhookEvent.postback);
+        }
+      });
+
+      // Returns a '200 OK' response to all requests
+      res.status(200).send('EVENT_RECEIVED');
+    } else {
+
+      // Returns a '404 Not Found' if event is not from a page subscription
+      res.sendStatus(404);
+    }
+  });
+
+  // Handles messages events
+  function handleMessage(senderPsid, receivedMessage) {
+    let response;
+
+    // Checks if the message contains text
+    if (receivedMessage.text) {
+      // Create the payload for a basic text message, which
+      // will be added to the body of your request to the Send API
+      response = {
+        'text': `You sent the message: '${receivedMessage.text}'. Now send me an attachment!`
+      };
+    } else if (receivedMessage.attachments) {
+
+      // Get the URL of the message attachment
+      let attachmentUrl = receivedMessage.attachments[0].payload.url;
+      response = {
+        'attachment': {
+          'type': 'template',
+          'payload': {
+            'template_type': 'generic',
+            'elements': [{
+              'title': 'Is this the right picture?',
+              'subtitle': 'Tap a button to answer.',
+              'image_url': attachmentUrl,
+              'buttons': [
+                {
+                  'type': 'postback',
+                  'title': 'Yes!',
+                  'payload': 'yes',
+                },
+                {
+                  'type': 'postback',
+                  'title': 'No!',
+                  'payload': 'no',
+                }
+              ],
+            }]
+          }
+        }
+      };
+    }
+
+    // Send the response message
+    callSendAPI(senderPsid, response);
   }
 
-});
+  // Handles messaging_postbacks events
+  function handlePostback(senderPsid, receivedPostback) {
+    let response;
 
-// webhook
-app.post('/webhook', (req, res) => {
+    // Get the payload for the postback
+    let payload = receivedPostback.payload;
 
-  // Facebook quick start code
-  let body = req.body;
-
-  // Checks this is an event from a page subscription
-  if (body.object === 'page') {
-
-    // Iterates over each entry - there may be multiple if batched
-    body.entry.forEach(function(entry) {
-
-      // Gets the message. entry.messaging is an array, but
-      // will only ever contain one message, so we get index 0
-      let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
-    });
-
-    // Returns a '200 OK' response to all requests
-    res.status(200).send('EVENT_RECEIVED');
-  } else {
-    // Returns a '404 Not Found' if event is not from a page subscription
-    res.sendStatus(404);
+    // Set the response based on the postback payload
+    if (payload === 'yes') {
+      response = { 'text': 'Thanks!' };
+    } else if (payload === 'no') {
+      response = { 'text': 'Oops, try sending another image.' };
+    }
+    // Send the message to acknowledge the postback
+    callSendAPI(senderPsid, response);
   }
-  // Facebook quick start code
 
+  // Sends response messages via the Send API
+  function callSendAPI(senderPsid, response) {
 
-  /* Default code below
-  // parse messaging array
-  const webhook_events = req.body.entry[0];
+    // The page access token we have generated in your app settings
+    const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
-  // initialize quick reply properties
-  let text, title, payload;
+    // Construct the message body
+    let requestBody = {
+      'recipient': {
+        'id': senderPsid
+      },
+      'message': response
+    };
 
-  // Secondary Receiver is in control - listen on standby channel
-  if (webhook_events.standby) {
-    
-    // iterate webhook events from standby channel
-    webhook_events.standby.forEach(event => {
-    
-      const psid = event.sender.id;
-      const message = event.message;
-
-      if (message && message.quick_reply && message.quick_reply.payload == 'take_from_inbox') {
-        // quick reply to take from Page inbox was clicked          
-        text = 'The Primary Receiver is taking control back. \n\n Tap "Pass to Inbox" to pass thread control to the Page Inbox.';
-        title = 'Pass to Inbox';
-        payload = 'pass_to_inbox';
-        
-        sendQuickReply(psid, text, title, payload);
-        HandoverProtocol.takeThreadControl(psid);
+    // Send the HTTP request to the Messenger Platform
+    request({
+      'uri': 'https://graph.facebook.com/v2.6/me/messages',
+      'qs': { 'access_token': PAGE_ACCESS_TOKEN },
+      'method': 'POST',
+      'json': requestBody
+    }, (err, _res, _body) => {
+      if (!err) {
+        console.log('Message sent!');
+      } else {
+        console.error('Unable to send message:' + err);
       }
-
-    });   
-  }
-
-  // Bot is in control - listen for messages 
-  if (webhook_events.messaging) {
-    
-    // iterate webhook events
-    webhook_events.messaging.forEach(event => {      
-      // parse sender PSID and message
-      const psid = event.sender.id;
-      const message = event.message;
-
-      if (message && message.quick_reply && message.quick_reply.payload == 'pass_to_inbox') {
-        
-        // quick reply to pass to Page inbox was clicked
-        let page_inbox_app_id = 263902037430900;          
-        text = 'The Primary Receiver is passing control to the Page Inbox. \n\n Tap "Take From Inbox" to have the Primary Receiver take control back.';
-        title = 'Take From Inbox';
-        payload = 'take_from_inbox';
-        
-        sendQuickReply(psid, text, title, payload);
-        HandoverProtocol.passThreadControl(psid, page_inbox_app_id);
-        
-      } else if (event.pass_thread_control) {
-        
-        // thread control was passed back to bot manually in Page inbox
-        text = 'You passed control back to the Primary Receiver by marking "Done" in the Page Inbox. \n\n Tap "Pass to Inbox" to pass control to the Page Inbox.';
-        title = 'Pass to Inbox';
-        payload = 'pass_to_inbox';
-        
-        sendQuickReply(psid, text, title, payload);
-
-      } else if (message && !message.is_echo) {      
-        
-        // default
-        text = 'Welcome! The bot is currently in control. \n\n Tap "Pass to Inbox" to pass control to the Page Inbox.';
-        title = 'Pass to Inbox';
-        payload = 'pass_to_inbox';
-
-        sendQuickReply(psid, text, title, payload);
-      }
-      
     });
   }
 
-  // respond to all webhook events with 200 OK
-  res.sendStatus(200);
-  */
-});
+  // listen for requests :)
+  var listener = app.listen(process.env.PORT, function() {
+    console.log('Your app is listening on port ' + listener.address().port);
+  });
