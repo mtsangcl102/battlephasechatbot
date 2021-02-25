@@ -113,22 +113,22 @@ function handleMessage(senderPsid, receivedMessage) {
   if (receivedMessage.text) {
     // Create the payload for a basic text message, which
     // will be added to the body of your request to the Send API
-    response = {
-      'text': `You sent the message: '${receivedMessage.text}'. Now send me an attachment!`
-    };
-  } else if (receivedMessage.attachments) {
+    //response = {
+    //  'text': `You sent the message: '${receivedMessage.text}'. Now send me an attachment!`
+    //};
+  //} else if (receivedMessage.attachments) {
 
     // Get the URL of the message attachment
-    let attachmentUrl = receivedMessage.attachments[0].payload.url;
+    //let attachmentUrl = receivedMessage.attachments[0].payload.url;
     response = {
       'attachment': {
         'type': 'template',
         'payload': {
           'template_type': 'generic',
           'elements': [{
-            'title': 'Is this the right picture?',
+            'title': '有咩幫到你?',
             'subtitle': 'Tap a button to answer.',
-            'image_url': attachmentUrl,
+            //'image_url': attachmentUrl,
             'buttons': [
               {
                 'type': 'postback',
