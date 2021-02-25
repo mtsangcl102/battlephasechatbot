@@ -37,7 +37,7 @@ app.use(json());
 
 // Respond with 'Hello World' when a GET request is made to the homepage
 app.get('/', function (_req, res) {
-  res.send('Hello World');
+  res.send('Hi Battle phase here');
 });
 
 // Adds support for GET requests to our webhook
@@ -172,7 +172,8 @@ function handlePostback(senderPsid, receivedPostback) {
 function callSendAPI(senderPsid, response) {
 
   // The page access token we have generated in your app settings
-  const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+  const PAGE_ACCESS_TOKEN =
+      "EAADhPGPjrSYBAFTA3QkBMUUOdek7AjVgPcf9lzfq8GCHBZBclmKl0CZCJX4ZAxZA44fEC88HoZCJpauOjAkFYUetfrA3GuLiJFHtmul7NCnGazZCl7ZBZANz6H2h3tfZChZAZAakyeZCI3CxQmXOMntyqZABMj9lfuLzJyNgg3h7EFLQ0AAZDZD";
 
   // Construct the message body
   let requestBody = {
