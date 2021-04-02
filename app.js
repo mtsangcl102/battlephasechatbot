@@ -126,7 +126,7 @@ function handleMessage(senderPsid, receivedMessage) {
         'payload': {
           'template_type': 'generic',
           'elements': [{
-            'title': '有咩幫到你?',
+            'title': '有咩幫到你? (測試中) ',
             'subtitle': 'Tap a button to answer.',
             //'image_url': attachmentUrl,
             'buttons': [
