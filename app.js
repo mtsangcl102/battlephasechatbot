@@ -126,19 +126,19 @@ function handleMessage(senderPsid, receivedMessage) {
         'payload': {
           'template_type': 'generic',
           'elements': [{
-            'title': '有咩幫到你? (測試中) ',
+            'title': '我係BP Man, 有咩幫到你? (測試中) ',
             'subtitle': 'Tap a button to answer.',
             //'image_url': attachmentUrl,
             'buttons': [
               {
                 'type': 'postback',
-                'title': 'Yes!',
-                'payload': 'yes',
+                'title': '門市地址',
+                'payload': 'shopAddress',
               },
               {
                 'type': 'postback',
-                'title': 'No!',
-                'payload': 'no',
+                'title': '營業時間',
+                'payload': 'openingTime',
               }
             ],
           }]
@@ -159,10 +159,10 @@ function handlePostback(senderPsid, receivedPostback) {
   let payload = receivedPostback.payload;
 
   // Set the response based on the postback payload
-  if (payload === 'yes') {
-    response = { 'text': 'Thanks!' };
-  } else if (payload === 'no') {
-    response = { 'text': 'Oops, try sending another image.' };
+  if (payload === '門市地址') {
+    response = { 'text': '葵芳葵豐街53號福業大廈10樓03室' };
+  } else if (payload === '營業時間') {
+    response = { 'text': '閒日星期一至五 下午兩點至十點\n星期六日及公眾假期中午十二點至十點' };
   }
   // Send the message to acknowledge the postback
   callSendAPI(senderPsid, response);
