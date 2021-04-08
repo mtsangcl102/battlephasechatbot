@@ -159,9 +159,9 @@ function handlePostback(senderPsid, receivedPostback) {
   let payload = receivedPostback.payload;
 
   // Set the response based on the postback payload
-  if (payload === '門市地址') {
+  if (payload === 'shopAddress') {
     response = { 'text': '葵芳葵豐街53號福業大廈10樓03室' };
-  } else if (payload === '營業時間') {
+  } else if (payload === 'openingTime') {
     response = { 'text': '閒日星期一至五 下午兩點至十點\n星期六日及公眾假期中午十二點至十點' };
   }
   // Send the message to acknowledge the postback
