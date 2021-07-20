@@ -19,20 +19,6 @@
 
 'use strict';
 
-var botAnswer_Address = '葵芳總店\n' +
-    '葵芳葵豐街53號福業大廈10樓03-04室\n' +
-    '\n' +
-    '天悅分店\n' +
-    '長沙灣天悅廣場106a\n';
-
-var botAnswer_OperationTime = '葵芳總店\n' +
-    '14:00-22:00 星期一至五\n' +
-    '12:00-22:00 星期六日及公眾假期\n' +
-    '\n' +
-    '天悅分店\n' +
-    '16:00-20:00 星期一至五\n' +
-    '14:00-20:00 星期六日及公眾假期\n';
-
 // Use dotenv to read .env vars into Node
 require('dotenv').config();
 
@@ -174,9 +160,9 @@ function handlePostback(senderPsid, receivedPostback) {
 
   // Set the response based on the postback payload
   if (payload === 'shopAddress') {
-    response = { 'text': botAnswer_Address };
+    response = { 'text': '葵芳葵豐街53號福業大廈10樓03室' };
   } else if (payload === 'openingTime') {
-    response = { 'text': '時間' };
+    response = { 'text': '閒日星期一至五 下午兩點至十點\n星期六日及公眾假期中午十二點至十點' };
   }
   // Send the message to acknowledge the postback
   callSendAPI(senderPsid, response);
