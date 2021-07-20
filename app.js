@@ -187,7 +187,7 @@ function callSendAPI(senderPsid, response) {
 
   // The page access token we have generated in your app settings
   const PAGE_ACCESS_TOKEN =
-      "EAADhPGPjrSYBAFTA3QkBMUUOdek7AjVgPcf9lzfq8GCHBZBclmKl0CZCJX4ZAxZA44fEC88HoZCJpauOjAkFYUetfrA3GuLiJFHtmul7NCnGazZCl7ZBZANz6H2h3tfZChZAZAakyeZCI3CxQmXOMntyqZABMj9lfuLzJyNgg3h7EFLQ0AAZDZD";
+      "EAADhPGPjrSYBAJW0fPCJeuYkrwbGBrpl3ZB4VGzkpPxk8IZAQHAY1IbgTocndPo9l84QKjRZA26sRxQBJvIXQ5uwxWCMc8fQX423EUhiD1sRyigASihn8bQRBwz2aeiX9Dv87ssLpxtbYIAUMTPgNPZB1zuaAVkb8SygGFLxk3DAZCP4rbkcX";
 
   // Construct the message body
   let requestBody = {
