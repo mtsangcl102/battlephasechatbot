@@ -176,7 +176,7 @@ function handlePostback(senderPsid, receivedPostback) {
   if (payload === 'shopAddress') {
     response = { 'text': botAnswer_Address };
   } else if (payload === 'openingTime') {
-    response = { 'text': botAnswer_OperationTime };
+    response = { 'text': '時間' };
   }
   // Send the message to acknowledge the postback
   callSendAPI(senderPsid, response);
