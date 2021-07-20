@@ -125,6 +125,8 @@ function handleMessage(senderPsid, receivedMessage) {
 
   // Checks if the message contains text
   if (receivedMessage.text === 'BP Man') {
+    console.log('Calling chat bot');
+
     // Create the payload for a basic text message, which
     // will be added to the body of your request to the Send API
   //  response = {
@@ -174,8 +176,10 @@ function handlePostback(senderPsid, receivedPostback) {
 
   // Set the response based on the postback payload
   if (payload === 'shopAddress') {
+    console.log('Asking shop address');
     response = { 'text': botAnswer_Address };
   } else if (payload === 'openingTime') {
+    console.log('Asking opening time');
     response = { 'text': botAnswer_OperationTime };
   }
   // Send the message to acknowledge the postback
